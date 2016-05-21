@@ -8,6 +8,27 @@ dekq::formal::controls::Button::Button()
 	this->setX(10);
 	this->setY(10);
 
+	listeners.mouse_enter = events.MouseEnter.operator+=([this](int i)
+	{
+		std::cout << "mouse enter" << std::endl;
+		this->states.hover = true;
+	});
+	listeners.mouse_leave = events.MouseLeave.operator+=([this](int i)
+	{
+		std::cout << "mouse leave" << std::endl;
+		this->states.hover = false;
+	});
+	listeners.pressed = events.Pressed.operator+=([this](int i)
+	{
+		std::cout << "pressed" << std::endl;
+		this->states.pressed = true;
+	});
+	listeners.released = events.Released.operator+=([this](int i)
+	{
+		std::cout << "released" << std::endl;
+		this->states.pressed = false;
+	});
+
 	updateComponents();
 }
 
@@ -92,19 +113,65 @@ void dekq::formal::controls::Button::updateComponents()
 	}
 }
 
-void dekq::formal::controls::Button::processEvent(sf::Event & args)
+void dekq::formal::controls::Button::processEvent(const sf::Event & args, int parentX, int parentY)
 {
 	switch (args.type)
 	{
 	case sf::Event::MouseMoved:
+	{
 		//hover detection
-		break;
+		int mouseX = args.mouseMove.x + parentX;
+		int mouseY = args.mouseMove.y + parentY;
+
+		int x = getX();
+		int y = getY();
+		int width = getWidth();
+		int height = getHeight();
+
+		if (mouseX >= x && mouseX <= x + width && mouseY >= y && mouseY <= y + height)
+		{
+			if (!states.hover)
+			{
+				events.MouseEnter.raise(0); //TODO
+			}
+		}
+		else
+		{
+			if (states.hover)
+			{
+				events.MouseLeave.raise(0); //TODO
+			}
+		}
+	}
+	break;
 	case sf::Event::MouseButtonPressed:
-		//pushed detection
+	{
+		//pressed detection
+		if (args.mouseButton.button == sf::Mouse::Left)
+		{
+			if (states.hover)
+			{
+				events.Pressed.raise(0); //TODO
+			}
+		}
 		break;
+	}
 	case sf::Event::MouseButtonReleased:
+	{
 		//click detection
-		break;
+		if (args.mouseButton.button == sf::Mouse::Left)
+		{
+			if (states.pressed)
+			{
+				if (states.hover)
+				{
+					events.Clicked.raise(0);
+				}
+				events.Released.raise(0);
+			}
+		}
+	}
+	break;
 	}
 }
 

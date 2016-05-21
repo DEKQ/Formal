@@ -51,6 +51,8 @@ int main()
 		sf::Event event;
 		while (window.pollEvent(event))
 		{
+			myButton.processEvent(event, 0, 0);
+
 			if (event.type == sf::Event::Closed)
 				window.close();
 		}

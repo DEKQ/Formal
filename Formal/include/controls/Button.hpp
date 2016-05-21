@@ -5,6 +5,7 @@
 #include <SFML\Graphics.hpp>
 #include <memory>
 #include "Control.hpp"
+#include "events\Event.hpp"
 
 namespace dekq
 {
@@ -19,7 +20,7 @@ namespace dekq
 
 				virtual void draw(sf::RenderTarget & target, sf::RenderStates states) const override;
 				
-				virtual void processEvent(sf::Event & args) override;
+				virtual void processEvent(const sf::Event & args, int parentX, int parentY) override;
 
 				
 
@@ -45,8 +46,24 @@ namespace dekq
 				std::shared_ptr<sf::Font>	style_getFont();
 				/* END Style accessors */
 
+				struct Events
+				{
+					events::Event<int> MouseEnter; //done
+					events::Event<int> MouseLeave; //done
+					events::Event<int> Pressed; //done
+					events::Event<int> Released; //done
+					events::Event<int> Clicked; //done
+				} events;
+
 			private:
 				virtual void updateComponents() override;
+
+				struct States
+				{
+					bool hover = false;
+					bool pressed = false;
+					bool focus = false;
+				} states;
 
 				struct Components
 				{
@@ -69,6 +86,14 @@ namespace dekq
 				{
 					std::string displayText = "Undefined displayText";
 				} properties;
+
+				struct Listeners
+				{
+					std::list<std::function<void(int)> >::iterator mouse_enter;
+					std::list<std::function<void(int)> >::iterator mouse_leave;
+					std::list<std::function<void(int)> >::iterator pressed;
+					std::list<std::function<void(int)> >::iterator released;
+				} listeners;
 
 			};
 		}

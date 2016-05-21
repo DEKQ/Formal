@@ -9,8 +9,6 @@ namespace dekq
 		class Control : public sf::Drawable
 		{
 		public:
-
-
 			void setWidth(int width);
 			int getWidth();
 			void setHeight(int height);
@@ -23,7 +21,7 @@ namespace dekq
 		protected:
 			virtual void updateComponents() = 0;
 
-			virtual void processEvent(sf::Event& args) = 0;
+			virtual void processEvent(const sf::Event& args, int parentX, int parentY) = 0;
 
 		private:
 			struct Properties
